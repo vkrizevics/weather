@@ -15,8 +15,8 @@ class StationControllerTest extends WebTestCase
         $mockResponse = new MockResponse(json_encode([
             'result' => [
                 'records' => [
-                    ['ID' => '001', 'NAME' => 'Riga Central'],
-                    ['ID' => '002', 'NAME' => 'Daugavpils'],
+                    ['STATION_ID' => '001', 'NAME' => 'Riga Central'],
+                    ['STATION_ID' => '002', 'NAME' => 'Daugavpils'],
                 ]
             ]
         ]));
@@ -34,8 +34,8 @@ class StationControllerTest extends WebTestCase
         $this->assertResponseFormatSame('json');
 
         $expected = [
-            ['station_id' => '001', 'name' => 'Riga Central'],
-            ['station_id' => '002', 'name' => 'Daugavpils'],
+            ['Station_id' => '001', 'Name' => 'Riga Central'],
+            ['Station_id' => '002', 'Name' => 'Daugavpils'],
         ];
 
         $this->assertJsonStringEqualsJsonString(json_encode($expected), $client->getResponse()->getContent());

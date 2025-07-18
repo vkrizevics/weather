@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Api;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -37,10 +38,14 @@ class StationController extends AbstractController
         $data = $response->toArray();
         $records = $data['result']['records'] ?? [];
 
-        $stations = array_map(fn($record) => [
-            'station_id' => $record['ID'],
-            'name' => $record['NAME'],
-        ], $records);
+        $collection = new ArrayCollection($records);
+
+        $stations = $collection->map(function ($record) {
+            return [
+                'Station_id' => $record['STATION_ID'] ?? null,
+                'Name' => $record['NAME'] ?? null,
+            ];
+        })->toArray();
 
         return $this->json($stations);
     }

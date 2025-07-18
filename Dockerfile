@@ -19,6 +19,9 @@ RUN mkdir -p /var/lib/mysql /var/run/mysqld && \
 # Set working directory
 WORKDIR /var/www/html
 
+# Create writable Symfony directories with correct permissions
+RUN mkdir -p var/cache var/log && chown -R www-data:www-data var
+
 # Copy project files and Nginx config
 COPY . .
 COPY default.conf /etc/nginx/sites-available/default
