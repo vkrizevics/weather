@@ -1,7 +1,10 @@
 <?php
+declare(strict_types = 1);
+
 namespace App\Tests\Controller\Api;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -17,10 +20,9 @@ class StationControllerTest extends WebTestCase
                 ]
             ]
         ]));
-
-        $mockClient = $this->createMock(HttpClientInterface::class);
-        $mockClient->method('request')
-            ->willReturn($mockResponse);
+        
+        // Wrap the MockResponse in a MockHttpClient
+        $mockClient = new MockHttpClient($mockResponse);
 
         $client = static::createClient();
 
