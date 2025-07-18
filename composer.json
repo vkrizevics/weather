@@ -63,5 +63,9 @@
             "allow-contrib": false,
             "require": "5.4.*"
         }
+    },
+    "require-dev": {
+        "symfony/browser-kit": "5.4.*",
+        "symfony/phpunit-bridge": "^7.3"
     }
 }
