@@ -27,7 +27,7 @@ RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 # Symfony and MariaDB setup script
 RUN chmod +x ./bin/console && \
     echo '#!/bin/bash\n\
-mysqld_safe --datadir="/var/lib/mysql" &\n\
+mariadbd-safe --datadir=/var/lib/mysql &\n\
 sleep 5\n\
 mysql -uroot -e "CREATE DATABASE IF NOT EXISTS symfony;"\n\
 mysql -uroot -e "CREATE USER IF NOT EXISTS '\''symfony'\''@'\''localhost'\'' IDENTIFIED BY '\''symfony'\'';"\n\
