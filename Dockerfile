@@ -22,12 +22,13 @@ WORKDIR /var/www/html
 # Copy project files and Nginx config
 COPY . .
 
-# Create writable Symfony directories with correct permissions
-RUN mkdir -p var/cache var/log && chown -R www-data:www-data var
+RUN chown -R www-data:www-data /var/www/html
 
-# Warm up the cache using www-data
 USER www-data
-RUN php bin/console cache:warmup
+
+RUN composer install --no-interaction --no-scripts --optimize-autoloader
+
+# Back to root user for nginx and permissions
 USER root
 
 COPY default.conf /etc/nginx/sites-available/default
@@ -41,8 +42,6 @@ sleep 5\n\
 mysql -uroot -e "CREATE DATABASE IF NOT EXISTS symfony;"\n\
 mysql -uroot -e "CREATE USER IF NOT EXISTS '\''symfony'\''@'\''localhost'\'' IDENTIFIED BY '\''symfony'\'';"\n\
 mysql -uroot -e "GRANT ALL PRIVILEGES ON symfony.* TO '\''symfony'\''@'\''localhost'\'';"\n\
-composer install --no-interaction --no-scripts\n\
-composer require --dev phpunit/phpunit ^9.5 --no-interaction\n\
 php bin/console doctrine:migrations:migrate --no-interaction\n\
 mysqladmin -uroot shutdown' > /init.sh && \
     chmod +x /init.sh && /init.sh
