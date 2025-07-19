@@ -6,6 +6,7 @@ namespace App\Controller\Api;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -48,5 +49,37 @@ class StationController extends AbstractController
         })->toArray();
 
         return $this->json($stations);
+    }
+
+    #[Route('/{station_id}', methods: ['GET'])]
+    public function stationDetail(string $station_id): JsonResponse
+    {
+        try {
+            $response = $this->client->request('GET', self::BASE_URL, [
+                'query' => [
+                    'resource_id' => self::RESOURCE_ID,
+                    'filters' => json_encode([
+                        'STATION_ID' => [$station_id],
+                    ]),
+                    'limit' => self::LIMIT,
+                ]
+            ]);
+
+            $data = $response->toArray(false);
+
+            $records = $data['result']['records'] ?? [];
+
+            if (!$records) {
+                return $this->json(['error' => 'Station not found'], Response::HTTP_NOT_FOUND);
+            }
+
+            return $this->json($records[0]); // return the first (and likely only) match
+
+        } catch (\Throwable $e) {
+            return $this->json([
+                'error' => 'Failed to fetch station data',
+                'message' => $e->getMessage()
+            ], Response::HTTP_SERVICE_UNAVAILABLE);
+        }
     }
 }

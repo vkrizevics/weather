@@ -70,10 +70,11 @@ class StationControllerTest extends WebTestCase
         ]);
 
         $this->assertResponseIsSuccessful();
-        $this->assertJsonContains([
-            'Station_id' => 42,
-            'Name' => 'Test Station 42',
-        ]);
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+
+        $this->assertIsArray($responseData);
+        $this->assertEquals('42', $responseData['Station_id']);
+        $this->assertEquals('Test Station 42', $responseData['Name']);
     }
 
 }
