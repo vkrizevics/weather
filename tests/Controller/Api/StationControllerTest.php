@@ -40,4 +40,40 @@ class StationControllerTest extends WebTestCase
 
         $this->assertJsonStringEqualsJsonString(json_encode($expected), $client->getResponse()->getContent());
     }
+
+    public function testStationDetailReturnsStationFromApi(): void
+    {
+        $mockData = [
+            'result' => [
+                'records' => [
+                    ['Station_id' => 42, 'Name' => 'Test Station 42'],
+                ],
+            ],
+        ];
+
+        $mockResponse = new MockResponse(json_encode($mockData), [
+            'http_code' => 200,
+            'headers' => ['Content-Type' => 'application/json'],
+        ]);
+
+        $mockHttpClient = new MockHttpClient(function () use ($mockResponse): MockResponse {
+            return $mockResponse;
+        });
+
+        $client = static::createClient(); // ✅ create client first
+
+        // Override the HttpClient service AFTER createClient()
+        self::getContainer()->set(HttpClientInterface::class, $mockHttpClient);
+
+        $client->request('GET', '/api/stations/42', [], [], [
+            'HTTP_Authorization' => 'Bearer your-secret-token-here',
+        ]);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertJsonContains([
+            'Station_id' => 42,
+            'Name' => 'Test Station 42',
+        ]);
+    }
+
 }
