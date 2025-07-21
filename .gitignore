@@ -13,3 +13,8 @@
 /.phpunit.cache/
 ###< phpunit/phpunit ###
 bin/phpunit
+
+###> symfony/phpunit-bridge ###
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###

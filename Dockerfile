@@ -27,9 +27,14 @@ COPY . .
 
 RUN chown -R www-data:www-data /var/www/html
 
+# Set permissions and environment so Composer cache directory is writable
+ENV COMPOSER_CACHE_DIR=/tmp/composer-cache
+
+# Switch to www-data and install dependencies
 USER www-data
 
-RUN composer install --no-interaction --no-scripts --optimize-autoloader
+RUN mkdir -p $COMPOSER_CACHE_DIR && \
+    composer install --no-interaction --no-scripts --prefer-dist --optimize-autoloader
 
 # Back to root user for nginx and permissions
 USER root
