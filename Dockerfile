@@ -7,7 +7,10 @@ RUN apt-get update && apt-get install -y gnupg wget lsb-release ca-certificates 
     apt-get update && apt-get install -y \
     git unzip zip nginx mariadb-server wget \
     libicu-dev libonig-dev libxml2-dev libzip-dev libpq-dev \
-    && docker-php-ext-install intl pdo pdo_mysql zip opcache
+    && docker-php-ext-install intl pdo pdo_mysql zip opcache \
+    && pecl install pcov \
+    && docker-php-ext-enable pcov \
+    && echo "pcov.enabled=0\npcov.directory=/var/www/html" > /usr/local/etc/php/conf.d/pcov.ini
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
