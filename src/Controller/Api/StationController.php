@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller\Api;
@@ -19,11 +20,8 @@ class StationController extends AbstractController
     
     private const LIMIT = 1000;
 
-    private HttpClientInterface $client;
-
-    public function __construct(HttpClientInterface $client)
+    public function __construct(private readonly HttpClientInterface $client)
     {
-        $this->client = $client;
     }
 
     #[Route('', methods: ['GET'])]
