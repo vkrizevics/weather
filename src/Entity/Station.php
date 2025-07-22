@@ -24,17 +24,17 @@ class Station
     #[ORM\Column(type: "string", length: 10, nullable: true)]
     private ?string $wmoId = null;
 
-    #[ORM\Column(type: "datetime")]
-    private \DateTimeInterface $beginDate;
+    #[ORM\Column(type: "datetime", nullable: true)]
+    private ?\DateTimeInterface $beginDate = null;
 
-    #[ORM\Column(type: "datetime")]
-    private \DateTimeInterface $endDate;
-
-    #[ORM\Column(type: "integer", nullable: true)]
-    private int $latitude = null;
+    #[ORM\Column(type: "datetime", nullable: true)]
+    private ?\DateTimeInterface $endDate = null;
 
     #[ORM\Column(type: "integer", nullable: true)]
-    private int $longitude = null;
+    private ?int $latitude = null;
+
+    #[ORM\Column(type: "integer", nullable: true)]
+    private ?int $longitude = null;
 
     #[ORM\Column(type: "decimal", precision: 8, scale: 2, nullable: true)]
     private ?string $gauss1 = null;
@@ -114,7 +114,7 @@ class Station
         return $this->beginDate;
     }
 
-    public function setBeginDate(\DateTimeInterface $beginDate): self
+    public function setBeginDate(?\DateTimeInterface $beginDate): self
     {
         $this->beginDate = $beginDate;
         
@@ -126,7 +126,7 @@ class Station
         return $this->endDate;
     }
 
-    public function setEndDate(\DateTimeInterface $endDate): self
+    public function setEndDate(?\DateTimeInterface $endDate): self
     {
         $this->endDate = $endDate;
         
