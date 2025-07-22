@@ -5,7 +5,12 @@ declare(strict_types=1);
 namespace App\Tests\Command;
 
 use App\Command\SyncStationsCommand;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Station;
+use App\Service\StationSyncService;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Query\Expr;
 use Doctrine\Persistence\ObjectRepository;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
@@ -17,7 +22,7 @@ class SyncStationsCommandTest extends TestCase
 {
     public function testSyncStationsCommandOutputsSuccessMessage(): void
     {
-        // Mock response
+        // Step 1: Mock the API HTTP response
         $mockResponse = $this->createMock(ResponseInterface::class);
         $mockResponse->method('toArray')->willReturn([
             'result' => [
@@ -43,26 +48,52 @@ class SyncStationsCommandTest extends TestCase
         $httpClient = $this->createMock(HttpClientInterface::class);
         $httpClient->method('request')->willReturn($mockResponse);
 
-        // Mock StationRepository
+        // Step 2: Mock Station repository
         $stationRepo = $this->createMock(ObjectRepository::class);
-        $stationRepo->method('findOneBy')->willReturn(null); // simulate new insert
+        $stationRepo->method('findOneBy')->willReturn(null);
 
-        // Mock EntityManager
-        $em = $this->createMock(EntityManagerInterface::class);
+        // Step 3: Mock Query and QueryBuilder for deletion
+        $query = $this->createMock(Query::class);
+        $query->method('execute')->willReturn(1);
+
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder->method('delete')->willReturnSelf();
+        $queryBuilder->method('where')->willReturnSelf();
+        $queryBuilder->method('setParameter')->willReturnSelf();
+        $queryBuilder->method('getQuery')->willReturn($query);
+        $queryBuilder->method('expr')->willReturn(
+            $this->getMockBuilder(Expr::class)->disableOriginalConstructor()->getMock()
+        );
+
+        // Step 4: Mock the real EntityManager with wrapInTransaction()
+        $em = $this->getMockBuilder(EntityManager::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getRepository', 'persist', 'flush', 'createQueryBuilder', 'wrapInTransaction'])
+            ->getMock();
+
         $em->method('getRepository')->willReturn($stationRepo);
-        $em->expects($this->once())->method('persist');
+        $em->method('createQueryBuilder')->willReturn($queryBuilder);
+
+        $em->expects($this->once())->method('persist')->with($this->isInstanceOf(Station::class));
         $em->expects($this->once())->method('flush');
 
-        // Create and test command
-        $command = new SyncStationsCommand($httpClient, $em);
+        $em->method('wrapInTransaction')->willReturnCallback(function (callable $callback) use ($em) {
+            return $callback($em);
+        });
 
+        // Step 5: Construct service and command
+        $stationSyncService = new StationSyncService($httpClient, $em);
+        $command = new SyncStationsCommand($stationSyncService);
+
+        // Step 6: Run command using CommandTester
         $application = new Application();
         $application->add($command);
 
         $commandTester = new CommandTester($application->find('app:sync-stations'));
         $commandTester->execute([]);
 
+        // Step 7: Assert expected output
         $output = $commandTester->getDisplay();
-        $this->assertStringContainsString('Stations synchronized successfully', $output);
+        $this->assertStringContainsString('Synchronized 1 station(s) successfully.', $output);
     }
 }

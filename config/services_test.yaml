@@ -6,3 +6,9 @@ services:
 
     Symfony\Contracts\HttpClient\HttpClientInterface:
         public: true
+
+    App\Repository\StationRepository:
+        public: true
+
+    App\Service\StationSyncService:
+        public: true

@@ -25,6 +25,10 @@ WORKDIR /var/www/html
 # Copy project files and Nginx config
 COPY . .
 
+RUN echo 'DATABASE_URL="mysql://symfony:symfony@127.0.0.1:3306/symfony?serverVersion=mariadb-11.8.0"' > .env.local
+RUN echo 'DATABASE_URL="mysql://symfony:symfony@127.0.0.1:3306/symfony?serverVersion=mariadb-11.8.0"' > .env.test.local
+RUN echo 'DATABASE_URL="mysql://symfony:symfony@127.0.0.1:3306/symfony?serverVersion=mariadb-11.8.0"' > .env.dev.local
+
 RUN chown -R www-data:www-data /var/www/html
 
 # Set permissions and environment so Composer cache directory is writable
