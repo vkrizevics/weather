@@ -82,12 +82,17 @@ class StationController extends AbstractController
         return $this->json([
             'Station_id' => $station->getStationId(),
             'Name' => $station->getName(),
-            'WMO_ID' => $station->getWmoId(),
-            'BeginDate' => $station->getBeginDate()?->format('c'),
-            'EndDate' => $station->getEndDate()?->format('c'),
+            'Wmo_id' => $station->getWmoId(),
+            'Begin_date' => $station->getBeginDate()?->format('c'),
+            'End_date' => $station->getEndDate()?->format('c'),
             'Latitude' => $station->getLatitude(),
             'Longitude' => $station->getLongitude(),
-            // Add other fields in future
+            'Gauss1' => $station->getGauss1(),
+            'Gauss2' => $station->getGauss2(),
+            'Geogr1' => $station->getGeogr1(),
+            'Geogr2' => $station->getGeogr2(),
+            'Elevation' => $station->getElevation(),
+            'Elevation_pressure' => $station->getElevationPressure(),
         ]);
     }
 }

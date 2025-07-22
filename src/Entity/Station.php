@@ -205,7 +205,7 @@ class Station
         return $this;
     }
 
-    public function getElevation(): ?float
+    public function getElevation(): ?string
     {
         return $this->elevation;
     }

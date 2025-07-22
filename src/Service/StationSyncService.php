@@ -47,54 +47,54 @@ class StationSyncService
                 $station->set_Id($record['_id'] ?? '');
                 $station->setStationId($record['STATION_ID'] ?? '');
                 $station->setName($record['NAME'] ?? '');
-                $station->setWmoId($record['WMO_ID'] ?? null);
+                $station->setWmoId(isset($record['WMO_ID']) && trim($record['WMO_ID']) ? $record['WMO_ID'] : null);
                 
-                $station->setBeginDate(isset($record['BEGIN_DATE']) && $record['BEGIN_DATE'] > 0 
+                $station->setBeginDate(isset($record['BEGIN_DATE']) && trim((string)$record['BEGIN_DATE']) 
                     ? new \DateTime($record['BEGIN_DATE']) 
                     : null
                 );
 
-                $station->setEndDate(isset($record['END_DATE']) && $record['END_DATE'] > 0 
+                $station->setEndDate(isset($record['END_DATE']) && trim((string)$record['END_DATE'])
                     ? new \DateTime($record['END_DATE']) 
                     : null
                 );
                 
-                $station->setLatitude(isset($record['LATITUDE']) && $record['LATITUDE'] > 0 
+                $station->setLatitude(isset($record['LATITUDE']) && trim((string)$record['LATITUDE']) 
                     ? (int) $record['LATITUDE'] 
                     : null
                 );
 
-                $station->setLongitude(isset($record['LONGITUDE']) && $record['LONGITUDE'] > 0 
+                $station->setLongitude(isset($record['LONGITUDE']) && trim((string)$record['LONGITUDE']) 
                     ? (int) $record['LONGITUDE'] 
                     : null
                 );
 
-                $station->setGauss1(isset($record['GAUSS1']) && $record['GAUSS1'] > 0 
+                $station->setGauss1(isset($record['GAUSS1']) && trim((string)$record['GAUSS1']) 
                     ? (string)$record['GAUSS1'] 
                     : null
                 );
 
-                $station->setGauss2(isset($record['GAUSS2']) && $record['GAUSS2'] > 0 
+                $station->setGauss2(isset($record['GAUSS2']) && trim((string)$record['GAUSS2'])
                     ? (string)$record['GAUSS2'] 
                     : null
                 );
 
-                $station->setGeogr1(isset($record['GEOGR1']) && $record['GEOGR1'] > 0 
+                $station->setGeogr1(isset($record['GEOGR1']) && trim((string)$record['GEOGR1']) 
                     ? (string)$record['GEOGR1'] 
                     : null
                 );
                 
-                $station->setGeogr2(isset($record['GEOGR2']) && $record['GEOGR2'] > 0 
+                $station->setGeogr2(isset($record['GEOGR2']) && trim((string)$record['GEOGR2'])
                     ? (string)$record['GEOGR2'] 
                     : null
                 );
                 
-                $station->setElevation(isset($record['ELEVATION']) && $record['ELEVATION'] > 0 
+                $station->setElevation(isset($record['ELEVATION']) && trim((string)$record['ELEVATION']) 
                     ? (string)$record['ELEVATION'] 
                     : null
                 );
                 
-                $station->setElevationPressure(isset($record['ELEVATION_PRESSURE']) && $record['ELEVATION_PRESSURE'] > 0 
+                $station->setElevationPressure(isset($record['ELEVATION_PRESSURE']) && trim((string)$record['ELEVATION_PRESSURE']) 
                     ? (string)$record['ELEVATION_PRESSURE'] 
                     : null
                 );
