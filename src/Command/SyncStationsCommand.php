@@ -55,16 +55,56 @@ class SyncStationsCommand extends Command
             $station->setStationId($record['STATION_ID'] ?? '');
             $station->setName($record['NAME'] ?? '');
             $station->setWmoId($record['WMO_ID'] ?? null);
-            $station->setBeginDate(!empty($record['BEGIN_DATE']) ? new \DateTime($record['BEGIN_DATE']) : null);
-            $station->setEndDate(!empty($record['END_DATE']) ? new \DateTime($record['END_DATE']) : null);
-            $station->setLatitude(!empty($record['LATITUDE']) ? (int) $record['LATITUDE'] : null);
-            $station->setLongitude(!empty($record['LONGITUDE']) ? (int) $record['LONGITUDE'] : null);
-            $station->setGauss1(!empty($record['GAUSS1']) ? (string)$record['GAUSS1'] : null);
-            $station->setGauss2(!empty($record['GAUSS2']) ? (string)$record['GAUSS2'] : null);
-            $station->setGeogr1(!empty($record['GEOGR1']) ? (string)$record['GEOGR1'] : null);
-            $station->setGeogr2(!empty($record['GEOGR2']) ? (string)$record['GEOGR2'] : null);
-            $station->setElevation(!empty($record['ELEVATION']) ? (string)$record['ELEVATION'] : null);
-            $station->setElevationPressure(!empty($record['ELEVATION_PRESSURE']) ? (string)$record['ELEVATION_PRESSURE'] : null);
+            
+            $station->setBeginDate(isset($record['BEGIN_DATE']) && $record['BEGIN_DATE'] > 0 
+                ? new \DateTime($record['BEGIN_DATE']) 
+                : null
+            );
+
+            $station->setEndDate(isset($record['END_DATE']) && $record['END_DATE'] > 0 
+                ? new \DateTime($record['END_DATE']) 
+                : null
+            );
+            
+            $station->setLatitude(isset($record['LATITUDE']) && $record['LATITUDE'] > 0 
+                ? (int) $record['LATITUDE'] 
+                : null
+            );
+
+            $station->setLongitude(isset($record['LONGITUDE']) && $record['LONGITUDE'] > 0 
+                ? (int) $record['LONGITUDE'] 
+                : null
+            );
+
+            $station->setGauss1(isset($record['GAUSS1']) && $record['GAUSS1'] > 0 
+                ? (string)$record['GAUSS1'] 
+                : null
+            );
+
+            $station->setGauss2(isset($record['GAUSS2']) && $record['GAUSS2'] > 0 
+                ? (string)$record['GAUSS2'] 
+                : null
+            );
+
+            $station->setGeogr1(isset($record['GEOGR1']) && $record['GEOGR1'] > 0 
+                ? (string)$record['GEOGR1'] 
+                : null
+            );
+            
+            $station->setGeogr2(isset($record['GEOGR2']) && $record['GEOGR2'] > 0 
+                ? (string)$record['GEOGR2'] 
+                : null
+            );
+            
+            $station->setElevation(isset($record['ELEVATION']) && $record['ELEVATION'] > 0 
+                ? (string)$record['ELEVATION'] 
+                : null
+            );
+            
+            $station->setElevationPressure(isset($record['ELEVATION_PRESSURE']) && $record['ELEVATION_PRESSURE'] > 0 
+                ? (string)$record['ELEVATION_PRESSURE'] 
+                : null
+            );
 
             $this->em->persist($station);
         }

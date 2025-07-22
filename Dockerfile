@@ -43,9 +43,11 @@ COPY default.conf /etc/nginx/sites-available/default
 RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
 # Set up cron job for syncing stations every minute
-RUN echo "* * * * * www-data php /var/www/html/bin/console app:sync-stations >> /var/log/cron.log 2>&1" > /etc/cron.d/sync-stations && \
+RUN echo "0 * * * * /usr/local/bin/php /var/www/html/bin/console app:sync-stations >> /var/log/cron.log 2>&1" > /etc/cron.d/sync-stations && \
     chmod 0644 /etc/cron.d/sync-stations && \
-    crontab -u www-data /etc/cron.d/sync-stations
+    crontab -u www-data /etc/cron.d/sync-stations && \
+    touch /var/log/cron.log && \
+    chmod 666 /var/log/cron.log
 
 # Symfony and MariaDB setup script
 RUN chmod +x ./bin/console && \
