@@ -5,9 +5,8 @@ security:
         api:
             pattern: ^/api
             stateless: true
-            guard:
-                authenticators:
-                    - App\Security\TokenGuardAuthenticator
+            custom_authenticators:
+                - App\Security\TokenAuthenticator
 
     access_control:
         - { path: ^/api, roles: ROLE_API }
