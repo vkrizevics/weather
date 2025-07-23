@@ -48,6 +48,7 @@ class TokenAuthenticator extends AbstractAuthenticator
                     public function getPassword() {}
                     public function getSalt() {}
                     public function getUserIdentifier() { return 'api_user'; }
+                    public function getUsername(): string { return 'api_user'; } // <-- Add this line
                     public function eraseCredentials() {}
                 };
             })

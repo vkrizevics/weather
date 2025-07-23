@@ -33,7 +33,9 @@ class StationControllerTest extends WebTestCase
         self::getContainer()->set(StationRepository::class, $mockRepo);
         self::getContainer()->set(StationSyncService::class, $mockSyncService);
 
-        $client->request('GET', '/api/stations');
+        $client->request('GET', '/api/stations', [], [], [
+            'HTTP_Authorization' => 'Bearer ' . $_ENV['API_TOKEN'],
+        ]);
 
         $this->assertResponseIsSuccessful();
         $this->assertResponseFormatSame('json');
@@ -64,7 +66,9 @@ class StationControllerTest extends WebTestCase
         self::getContainer()->set(StationRepository::class, $mockRepo);
         self::getContainer()->set(StationSyncService::class, $mockSyncService);
 
-        $client->request('GET', '/api/stations/42');
+        $client->request('GET', '/api/stations/42', [], [], [
+            'HTTP_Authorization' => 'Bearer ' . $_ENV['API_TOKEN'],
+        ]);
 
         $this->assertResponseIsSuccessful();
 
