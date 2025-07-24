@@ -14,6 +14,7 @@ use Doctrine\ORM\Query\Expr;
 use Doctrine\Persistence\ObjectRepository;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
@@ -215,5 +216,24 @@ class SyncStationsCommandTest extends TestCase
         // Step 7: Assert expected output
         $output = $commandTester->getDisplay();
         $this->assertStringContainsString('Synchronized 1 station(s) successfully.', $output);
+    }
+
+    public function testSyncFailure(): void
+    {
+        $mockService = $this->createMock(StationSyncService::class);
+        $mockService->expects($this->once())
+            ->method('syncStations')
+            ->willThrowException(new \RuntimeException('Sync failed due to network error'));
+
+        $command = new SyncStationsCommand($mockService);
+        $tester = new CommandTester($command);
+
+        $exitCode = $tester->execute([]);
+
+        $output = $tester->getDisplay();
+
+        $this->assertSame(Command::FAILURE, $exitCode);
+        $this->assertStringContainsString('Error occurred during station sync', $output);
+        $this->assertStringContainsString('Sync failed due to network error', $output);
     }
 }
