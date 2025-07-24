@@ -8,7 +8,6 @@ use App\Entity\Station;
 use App\Repository\StationRepository;
 use App\Service\StationSyncService;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class StationControllerTest extends WebTestCase
 {
@@ -26,6 +25,45 @@ class StationControllerTest extends WebTestCase
         // Mock the StationSyncService
         $mockSyncService = $this->createMock(StationSyncService::class);
         $mockSyncService->method('hasStationsSynced')->willReturn(true);
+
+        $client = static::createClient();
+
+        // Replace services in container
+        self::getContainer()->set(StationRepository::class, $mockRepo);
+        self::getContainer()->set(StationSyncService::class, $mockSyncService);
+
+        $client->request('GET', '/api/stations', [], [], [
+            'HTTP_Authorization' => 'Bearer ' . $_ENV['API_TOKEN'],
+        ]);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseFormatSame('json');
+
+        $expected = [
+            ['Station_id' => '001', 'Name' => 'Riga Central'],
+            ['Station_id' => '002', 'Name' => 'Daugavpils'],
+        ];
+
+        $this->assertJsonStringEqualsJsonString(
+            json_encode($expected),
+            $client->getResponse()->getContent()
+        );
+    }
+
+    public function testListStationsReturnsSyncError(): void
+    {
+        $stations = [
+            $this->createMockStation('001', 'Riga Central'),
+            $this->createMockStation('002', 'Daugavpils'),
+        ];
+
+        // Mock the StationRepository
+        $mockRepo = $this->createMock(StationRepository::class);
+        $mockRepo->method('findAll')->willReturn($stations);
+
+        // Mock the StationSyncService
+        $mockSyncService = $this->createMock(StationSyncService::class);
+        $mockSyncService->method('hasStationsSynced')->willReturn(false);
 
         $client = static::createClient();
 
