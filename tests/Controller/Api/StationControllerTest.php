@@ -187,6 +187,28 @@ class StationControllerTest extends WebTestCase
         );
     }
 
+    public function testStationDetailReturns404IfStationNotFound(): void
+    {
+        $mockRepo = $this->createMock(StationRepository::class);
+        $mockRepo->method('findOneBy')->willReturn(null); // Simulate not found
+
+        $mockSyncService = $this->createMock(StationSyncService::class);
+        $mockSyncService->method('hasStationsSynced')->willReturn(true);
+
+        $client = static::createClient();
+
+        self::getContainer()->set(StationRepository::class, $mockRepo);
+        self::getContainer()->set(StationSyncService::class, $mockSyncService);
+
+        $client->request('GET', '/api/stations/999', [], [], [
+            'HTTP_Authorization' => 'Bearer ' . $_ENV['API_TOKEN'],
+        ]);
+
+        $this->assertResponseStatusCodeSame(404);
+
+        $data = json_decode($client->getResponse()->getContent(), true);
+        $this->assertEquals(['error' => 'Station not found'], $data);
+    }
     
     private function createMockStation(string $id, string $name)
     {
