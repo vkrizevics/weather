@@ -96,4 +96,60 @@ class SyncStationsCommandTest extends TestCase
         $output = $commandTester->getDisplay();
         $this->assertStringContainsString('Synchronized 1 station(s) successfully.', $output);
     }
+
+    public function testSyncStationsCommandIgnoresEmpty_Ids(): void
+    {
+        // Step 1: Mock the API HTTP response
+        $mockResponse = $this->createMock(ResponseInterface::class);
+        $mockResponse->method('toArray')->willReturn([
+            'result' => [
+                'records' => [[]]
+            ]
+        ]);
+
+        $httpClient = $this->createMock(HttpClientInterface::class);
+        $httpClient->method('request')->willReturn($mockResponse);
+
+        // Step 2: Mock Query and QueryBuilder for deletion
+        $query = $this->createMock(Query::class);
+        $query->method('execute')->willReturn(1);
+
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder->method('delete')->willReturnSelf();
+        $queryBuilder->method('where')->willReturnSelf();
+        $queryBuilder->method('setParameter')->willReturnSelf();
+        $queryBuilder->method('getQuery')->willReturn($query);
+        $queryBuilder->method('expr')->willReturn(
+            $this->getMockBuilder(Expr::class)->disableOriginalConstructor()->getMock()
+        );
+
+        // Step 4: Mock the real EntityManager with wrapInTransaction()
+        $em = $this->getMockBuilder(EntityManager::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getRepository', 'persist', 'flush', 'createQueryBuilder', 'wrapInTransaction'])
+            ->getMock();
+
+        $em->method('createQueryBuilder')->willReturn($queryBuilder);
+
+        $em->expects($this->once())->method('flush');
+
+        $em->method('wrapInTransaction')->willReturnCallback(function (callable $callback) use ($em) {
+            return $callback($em);
+        });
+
+        // Step 5: Construct service and command
+        $stationSyncService = new StationSyncService($httpClient, $em);
+        $command = new SyncStationsCommand($stationSyncService);
+
+        // Step 6: Run command using CommandTester
+        $application = new Application();
+        $application->add($command);
+
+        $commandTester = new CommandTester($application->find('app:sync-stations'));
+        $commandTester->execute([]);
+
+        // Step 7: Assert expected output
+        $output = $commandTester->getDisplay();
+        $this->assertStringContainsString('Synchronized 0 station(s) successfully.', $output);
+    }
 }
