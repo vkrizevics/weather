@@ -50,7 +50,7 @@ class StationControllerTest extends WebTestCase
         );
     }
 
-    public function testListStationsReturnsSyncError(): void
+    public function testListStationsReturnsSyncedStations(): void
     {
         $stations = [
             $this->createMockStation('001', 'Riga Central'),
@@ -85,6 +85,28 @@ class StationControllerTest extends WebTestCase
 
         $this->assertJsonStringEqualsJsonString(
             json_encode($expected),
+            $client->getResponse()->getContent()
+        );
+    }
+
+    public function testListStationsReturns503OnSyncFailure(): void
+    {
+        $client = static::createClient();
+
+        $mockSyncService = $this->createMock(StationSyncService::class);
+        $mockSyncService->method('hasStationsSynced')->willReturn(false);
+        $mockSyncService->method('syncStations')->willThrowException(new \Exception('sync failed'));
+
+        // Override the service in the container
+        static::getContainer()->set(StationSyncService::class, $mockSyncService);
+
+        $client->request('GET', '/api/stations', [], [], [
+            'HTTP_Authorization' => 'Bearer ' . $_ENV['API_TOKEN'],
+        ]);
+
+        $this->assertEquals(503, $client->getResponse()->getStatusCode());
+        $this->assertJsonStringEqualsJsonString(
+            json_encode(['error' => 'Failed to sync station data']),
             $client->getResponse()->getContent()
         );
     }
