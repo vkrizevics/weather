@@ -113,7 +113,7 @@ class StationControllerTest extends WebTestCase
 
     public function testStationDetailReturnsStationFromDatabase(): void
     {
-        $station = $this->createMockStation('42', 'Test Station 42');
+        $station = $this->createMockStation('SIGULDA42', 'Test Station 42');
 
         $mockRepo = $this->createMock(StationRepository::class);
         $mockRepo->method('findOneBy')->willReturn($station);
@@ -126,7 +126,7 @@ class StationControllerTest extends WebTestCase
         self::getContainer()->set(StationRepository::class, $mockRepo);
         self::getContainer()->set(StationSyncService::class, $mockSyncService);
 
-        $client->request('GET', '/api/stations/42', [], [], [
+        $client->request('GET', '/api/stations/SIGULDA42', [], [], [
             'HTTP_Authorization' => 'Bearer ' . $_ENV['API_TOKEN'],
         ]);
 
@@ -134,13 +134,13 @@ class StationControllerTest extends WebTestCase
 
         $data = json_decode($client->getResponse()->getContent(), true);
 
-        $this->assertEquals('42', $data['Station_id']);
+        $this->assertEquals('SIGULDA42', $data['Station_id']);
         $this->assertEquals('Test Station 42', $data['Name']);
     }
 
     public function testStationDetailReturnsSyncedStation(): void
     {
-        $station = $this->createMockStation('43', 'Test Station 43');
+        $station = $this->createMockStation('SIGULDA43', 'Test Station 43');
 
         $mockRepo = $this->createMock(StationRepository::class);
         $mockRepo->method('findOneBy')->willReturn($station);
@@ -153,7 +153,7 @@ class StationControllerTest extends WebTestCase
         self::getContainer()->set(StationRepository::class, $mockRepo);
         self::getContainer()->set(StationSyncService::class, $mockSyncService);
 
-        $client->request('GET', '/api/stations/43', [], [], [
+        $client->request('GET', '/api/stations/SIGULDA43', [], [], [
             'HTTP_Authorization' => 'Bearer ' . $_ENV['API_TOKEN'],
         ]);
 
@@ -161,7 +161,7 @@ class StationControllerTest extends WebTestCase
 
         $data = json_decode($client->getResponse()->getContent(), true);
 
-        $this->assertEquals('43', $data['Station_id']);
+        $this->assertEquals('SIGULDA43', $data['Station_id']);
         $this->assertEquals('Test Station 43', $data['Name']);
     }
 
@@ -176,7 +176,7 @@ class StationControllerTest extends WebTestCase
         // Override the service in the container
         static::getContainer()->set(StationSyncService::class, $mockSyncService);
 
-        $client->request('GET', '/api/stations/44', [], [], [
+        $client->request('GET', '/api/stations/SIGULDA44', [], [], [
             'HTTP_Authorization' => 'Bearer ' . $_ENV['API_TOKEN'],
         ]);
 
@@ -200,7 +200,7 @@ class StationControllerTest extends WebTestCase
         self::getContainer()->set(StationRepository::class, $mockRepo);
         self::getContainer()->set(StationSyncService::class, $mockSyncService);
 
-        $client->request('GET', '/api/stations/999', [], [], [
+        $client->request('GET', '/api/stations/SIGULDA999', [], [], [
             'HTTP_Authorization' => 'Bearer ' . $_ENV['API_TOKEN'],
         ]);
 
