@@ -89,6 +89,8 @@ mysqladmin -uroot shutdown' > /init.sh && \
 
 # Entrypoint script to run MariaDB, cron, PHP-FPM, and Nginx
 RUN echo '#!/bin/bash\n\
+chown -R www-data:www-data /var/www/html/var\n\
+chmod -R 775 /var/www/html/var\n\
 mariadbd-safe --datadir=/var/lib/mysql &\n\
 cron\n\
 php-fpm -D\n\
