@@ -2,7 +2,7 @@
 
 ## Preface
 
-I have chosen for the task Symfony 5.4 framework because Symfony 5 was mentioned both in job advertisement and job interview by your developer as a framework used by your company for many projects and the version 5.4 was the long-term support version. I have chosen nginx to serve the solution for its performance, pcov extension for using with phpUnit for generating code coverage reports for its performance as well.
+I have chosen for the task Symfony 5.4 framework because Symfony 5 was mentioned both in the job advertisement and the job interview by your developer as a framework used by your company for many projects and the version 5.4 was the long-term support version. I have chosen nginx to serve the solution for its performance, pcov extension for using with phpUnit for generating code coverage reports for its performance as well.
 
 By default pcov is disabled to speed-up the solution even more. It is enabled before launching phpUnit in tests.sh
 
@@ -23,7 +23,7 @@ If `weather` container is not available, use another container name instead.
 
 Free port 80.
 
-After the image will be built (this can take 5-10 minutes) execute from the project root:
+After the image will be built execute from the project root:
 `docker run -p 80:80 --name weather weather`
 
 You are ready to test the application
