@@ -1,0 +1,232 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Weather Station API",
+    "version": "1.0.0",
+    "description": "API for listing and retrieving weather station data. Requires Bearer token authentication."
+  },
+  "servers": [
+    {
+      "url": "http://localhost",
+      "description": "Test Server"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/stations": {
+      "get": {
+        "summary": "List all weather stations",
+        "operationId": "listStations",
+        "responses": {
+          "200": {
+            "description": "A list of stations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StationSummary"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Failed to sync station data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/stations/{station_id}": {
+      "get": {
+        "summary": "Get station details",
+        "operationId": "getStationDetail",
+        "parameters": [
+          {
+            "name": "station_id",
+            "in": "path",
+            "required": true,
+            "description": "The unique ID of the station",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Station detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StationDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Station not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Failed to sync station data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Provide your pre-shared Bearer token",
+        "bearerFormat": "token"
+      }
+    },
+    "schemas": {
+      "StationSummary": {
+        "type": "object",
+        "properties": {
+          "Station_id": {
+            "type": "string",
+            "example": "SIGULDA"
+          },
+          "Name": {
+            "type": "string",
+            "example": "Sigulda"
+          }
+        }
+      },
+      "StationDetail": {
+        "type": "object",
+        "properties": {
+          "_Id": {
+            "type": "integer",
+            "nullable": true,
+            "example": 2
+          },
+          "Station_id": {
+            "type": "string",
+            "nullable": true,
+            "example": "SIGULDA"
+          },
+          "Name": {
+            "type": "string",
+            "nullable": true,
+            "example": "Sigulda"
+          },
+          "Wmo_id": {
+            "type": "string",
+            "nullable": true,
+            "example": "26446"
+          },
+          "Begin_date": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time",
+            "example": "1939-01-03T00:00:00+00:00"
+          },
+          "End_date": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time",
+            "example": "3999-12-31T23:59:00+00:00"
+          },
+          "Latitude": {
+            "type": "integer",
+            "nullable": true,
+            "example": 570954
+          },
+          "Longitude": {
+            "type": "integer",
+            "nullable": true,
+            "example": 245112
+          },
+          "Gauss1": {
+            "type": "string",
+            "nullable": true,
+            "example": "551605.75"
+          },
+          "Gauss2": {
+            "type": "string",
+            "nullable": true,
+            "example": "336076.09"
+          },
+          "Geogr1": {
+            "type": "string",
+            "nullable": true,
+            "example": "24.853300"
+          },
+          "Geogr2": {
+            "type": "string",
+            "nullable": true,
+            "example": "57.165000"
+          },
+          "Elevation": {
+            "type": "string",
+            "nullable": true,
+            "example": "100.15"
+          },
+          "Elevation_pressure": {
+            "type": "string",
+            "nullable": true,
+            "example": "3.15"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Station not found"
+          }
+        }
+      }
+    }
+  }
+}

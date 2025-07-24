@@ -1,0 +1,15 @@
+security:
+    enable_authenticator_manager: true
+
+    firewalls:
+        api:
+            pattern: ^/api
+            stateless: true
+            custom_authenticators:
+                - App\Security\TokenAuthenticator
+
+    access_control:
+        - { path: ^/api, roles: ROLE_API }
+
+    providers:
+        in_memory: { memory: null }

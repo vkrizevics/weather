@@ -1,0 +1,14 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Symfony\Contracts\HttpClient\HttpClientInterface:
+        public: true
+
+    App\Repository\StationRepository:
+        public: true
+
+    App\Service\StationSyncService:
+        public: true

@@ -1,0 +1,1 @@
+php -d pcov.enabled=1 vendor/bin/phpunit --coverage-html public/coverage
