@@ -11,6 +11,34 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class StationControllerTest extends WebTestCase
 {
+    public function testListStationsReturns401IfNoToken(): void
+    {
+        $client = static::createClient();
+
+        $client->request('GET', '/api/stations/', [], [], [
+            'HTTP_Authorization' => 'ONE BEER ' . $_ENV['API_TOKEN'],
+        ]);
+
+        $this->assertResponseStatusCodeSame(401);
+
+        $data = json_decode($client->getResponse()->getContent(), true);
+        $this->assertEquals(['error' => 'Authentication failed'], $data);
+    }
+
+    public function testListStationsReturns401IfWrongToken(): void
+    {
+        $client = static::createClient();
+
+        $client->request('GET', '/api/stations/', [], [], [
+            'HTTP_Authorization' => 'Bearer WRONG TOKEN',
+        ]);
+
+        $this->assertResponseStatusCodeSame(401);
+
+        $data = json_decode($client->getResponse()->getContent(), true);
+        $this->assertEquals(['error' => 'Authentication failed'], $data);
+    }
+
     public function testListStationsReturnsFormattedJson(): void
     {
         $stations = [
