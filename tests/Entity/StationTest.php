@@ -13,7 +13,15 @@ class StationTest extends KernelTestCase
     protected function setUp(): void
     {
         self::bootKernel();
-        $this->entityManager = self::$container->get(EntityManagerInterface::class);
+        $this->entityManager = self::getContainer()->get(EntityManagerInterface::class);
+
+        $this->entityManager->beginTransaction();
+    }
+
+    protected function tearDown(): void
+    {
+        $this->entityManager->rollback(); // Undo changes
+        parent::tearDown();
     }
 
     public function testStationEntityPersistence(): void
