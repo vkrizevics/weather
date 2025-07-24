@@ -44,7 +44,7 @@ COPY . .
 
 # Setup your DATABASE_URL environment variables
 RUN echo 'DATABASE_URL="mysql://symfony:symfony@127.0.0.1:3306/symfony?serverVersion=mariadb-11.8.0"' > .env.local
-RUN echo 'DATABASE_URL="mysql://symfony:symfony@127.0.0.1:3306/symfony?serverVersion=mariadb-11.8.0"' > .env.test.local
+RUN echo 'DATABASE_URL="mysql://symfony:symfony@127.0.0.1:3306/symfony_test?serverVersion=mariadb-11.8.0"' > .env.test.local
 RUN echo 'DATABASE_URL="mysql://symfony:symfony@127.0.0.1:3306/symfony?serverVersion=mariadb-11.8.0"' > .env.dev.local
 
 # Set permissions for www-data user
@@ -80,7 +80,10 @@ sleep 5\n\
 mysql -uroot -e "CREATE DATABASE IF NOT EXISTS symfony;"\n\
 mysql -uroot -e "CREATE USER IF NOT EXISTS '\''symfony'\''@'\''localhost'\'' IDENTIFIED BY '\''symfony'\'';"\n\
 mysql -uroot -e "GRANT ALL PRIVILEGES ON symfony.* TO '\''symfony'\''@'\''localhost'\'';"\n\
-php bin/console doctrine:migrations:migrate --no-interaction\n\
+mysql -uroot -e "CREATE DATABASE IF NOT EXISTS symfony_test;"\n\
+mysql -uroot -e "GRANT ALL PRIVILEGES ON symfony_test.* TO '\''symfony'\''@'\''localhost'\'';"\n\
+php bin/console doctrine:migrations:migrate --no-interaction --env=dev\n\
+php bin/console doctrine:migrations:migrate --no-interaction --env=test\n\
 mysqladmin -uroot shutdown' > /init.sh && \
     chmod +x /init.sh && /init.sh
 
