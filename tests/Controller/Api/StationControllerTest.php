@@ -138,6 +138,55 @@ class StationControllerTest extends WebTestCase
         $this->assertEquals('Test Station 42', $data['Name']);
     }
 
+    public function testStationDetailReturnsSyncedStation(): void
+    {
+        $station = $this->createMockStation('43', 'Test Station 43');
+
+        $mockRepo = $this->createMock(StationRepository::class);
+        $mockRepo->method('findOneBy')->willReturn($station);
+
+        $mockSyncService = $this->createMock(StationSyncService::class);
+        $mockSyncService->method('hasStationsSynced')->willReturn(false);
+
+        $client = static::createClient();
+
+        self::getContainer()->set(StationRepository::class, $mockRepo);
+        self::getContainer()->set(StationSyncService::class, $mockSyncService);
+
+        $client->request('GET', '/api/stations/43', [], [], [
+            'HTTP_Authorization' => 'Bearer ' . $_ENV['API_TOKEN'],
+        ]);
+
+        $this->assertResponseIsSuccessful();
+
+        $data = json_decode($client->getResponse()->getContent(), true);
+
+        $this->assertEquals('43', $data['Station_id']);
+        $this->assertEquals('Test Station 43', $data['Name']);
+    }
+
+    public function testStationDetailReturns503OnSyncFailure(): void
+    {
+        $client = static::createClient();
+
+        $mockSyncService = $this->createMock(StationSyncService::class);
+        $mockSyncService->method('hasStationsSynced')->willReturn(false);
+        $mockSyncService->method('syncStations')->willThrowException(new \Exception('sync failed'));
+
+        // Override the service in the container
+        static::getContainer()->set(StationSyncService::class, $mockSyncService);
+
+        $client->request('GET', '/api/stations/44', [], [], [
+            'HTTP_Authorization' => 'Bearer ' . $_ENV['API_TOKEN'],
+        ]);
+
+        $this->assertEquals(503, $client->getResponse()->getStatusCode());
+        $this->assertJsonStringEqualsJsonString(
+            json_encode(['error' => 'Failed to sync station data']),
+            $client->getResponse()->getContent()
+        );
+    }
+
     
     private function createMockStation(string $id, string $name)
     {
