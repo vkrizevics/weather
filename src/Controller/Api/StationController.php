@@ -38,7 +38,6 @@ class StationController extends AbstractController
             } catch (\Throwable $e) {
                 return $this->json([
                     'error' => 'Failed to sync station data',
-                    'message' => $e->getMessage(),
                 ], Response::HTTP_SERVICE_UNAVAILABLE);
             }
         }
@@ -68,7 +67,6 @@ class StationController extends AbstractController
             } catch (\Throwable $e) {
                 return $this->json([
                     'error' => 'Failed to sync station data',
-                    'message' => $e->getMessage(),
                 ], Response::HTTP_SERVICE_UNAVAILABLE);
             }
         }
@@ -80,6 +78,7 @@ class StationController extends AbstractController
         }
 
         return $this->json([
+            '_Id' => $station->get_Id(),
             'Station_id' => $station->getStationId(),
             'Name' => $station->getName(),
             'Wmo_id' => $station->getWmoId(),
